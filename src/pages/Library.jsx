@@ -1,28 +1,15 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-
-const books = [
-    {
-        slug: "zashita-dannyh-ot-avtorizacii-do-audita",
-        title: "Защита данных. От авторизации до аудита",
-        author: "Джейсон Андресс",
-        coverUrl: "library/covers/ИБ.png",
-    },
-    { slug: "book-2", title: "Название книги", author: "Имя автора" },
-    { slug: "book-3", title: "Название книги", author: "Имя автора" },
-    { slug: "book-4", title: "Название книги", author: "Имя автора" },
-    { slug: "book-5", title: "Название книги", author: "Имя автора" },
-    { slug: "book-6", title: "Название книги", author: "Имя автора" },
-];
-
-const resolveAsset = (path) =>
-    `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+import { useCallback, useDeferredValue, useMemo, useState } from "react";
+import SectionHeader from "../components/ui/SectionHeader.jsx";
+import BookCard from "../features/library/components/BookCard.jsx";
+import LibrarySearch from "../features/library/components/LibrarySearch.jsx";
+import { books } from "../features/library/data/books.js";
 
 function Library() {
     const [query, setQuery] = useState("");
+    const deferredQuery = useDeferredValue(query);
 
     const filteredBooks = useMemo(() => {
-        const normalized = query.trim().toLowerCase();
+        const normalized = deferredQuery.trim().toLowerCase();
         if (!normalized) {
             return books;
         }
@@ -31,49 +18,28 @@ function Library() {
             const author = book.author.toLowerCase();
             return title.includes(normalized) || author.includes(normalized);
         });
-    }, [query]);
+    }, [deferredQuery]);
+
+    const handleQueryChange = useCallback((event) => {
+        setQuery(event.target.value);
+    }, []);
 
     return (
         <section className="section">
-            <div className="section__head">
-                <h2>Библиотека</h2>
-                <p>Найдите книгу по названию или автору.</p>
-            </div>
+            <SectionHeader
+                title="Библиотека"
+                description="Найдите книгу по названию или автору."
+            />
 
-            <div className="library-search">
-                <input
-                    className="library-search__input"
-                    type="text"
-                    placeholder="Введите название или автора"
-                    value={query}
-                    onChange={(event) => setQuery(event.target.value)}
-                />
-            </div>
+            <LibrarySearch
+                value={query}
+                onChange={handleQueryChange}
+                placeholder="Введите название или автора"
+            />
 
             <div className="shelf">
                 {filteredBooks.map((book) => (
-                    <Link
-                        key={book.slug}
-                        className="book-card"
-                        to={`/library/${book.slug}`}
-                    >
-                        <div className="book-card__cover" aria-hidden="true">
-                            {book.coverUrl ? (
-                                <img
-                                    src={resolveAsset(book.coverUrl)}
-                                    alt={`Обложка книги ${book.title}`}
-                                />
-                            ) : (
-                                <div className="book-card__placeholder">
-                                    Обложка
-                                </div>
-                            )}
-                        </div>
-                        <div className="book-card__meta">
-                            <h3>{book.title}</h3>
-                            <p>{book.author}</p>
-                        </div>
-                    </Link>
+                    <BookCard key={book.slug} {...book} />
                 ))}
             </div>
         </section>

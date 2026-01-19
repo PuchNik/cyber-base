@@ -1,16 +1,63 @@
-# React + Vite
+# Cyber Base
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Образовательная платформа по информационной безопасности. Проект построен по
+компонентному подходу: данные отделены от UI, повторяющиеся блоки вынесены в
+переиспользуемые компоненты, состояние и эффекты управляются через хуки.
 
-Currently, two official plugins are available:
+## Стек
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React 18 + Vite
+- React Router
+- CSS (общий стиль приложения в `src/App.css`)
 
-## React Compiler
+## Архитектура проекта
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```
+src/
+  app/                # точка композиции приложения и провайдеры
+    App.jsx
+    providers/
+  components/         # переиспользуемые UI/Layouts/Sections
+  data/               # статичные данные и справочники
+  features/           # функциональные модули (library и др.)
+  pages/              # страницы роутинга
+  shared/             # контексты, хуки, утилиты
+```
 
-## Expanding the ESLint configuration
+## Принципы и подходы
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Компонентный подход
+- UI разбит на небольшие компоненты (`SectionHeader`, `LinkCard`, `InfoCard`).
+- Общие layout-блоки выделены в `components/layout`.
+- Страницы используют композицию из UI-компонентов и данных.
+
+### Управление состоянием
+- Глобальное состояние темы хранится в `ThemeProvider`.
+- Локальное состояние страниц — через `useState`.
+- Производительные производные данные — через `useMemo`.
+
+### Пропсы и передача данных
+- Компоненты принимают только необходимые пропсы.
+- Данные разделены в `src/data` и `features/*/data`.
+
+### Эффекты и жизненный цикл
+- Синхронизация темы с `localStorage` и `document.body` выполняется через `useEffect`.
+- Ресурсные операции (слушатели событий) аккуратно подписываются/отписываются.
+
+### SSR и CSR
+- Проект работает как CSR-приложение (Vite + HashRouter).
+- Код написан с учетом SSR-совместимости: чтение `window`/`document` защищено.
+- Для перехода к SSR можно заменить Router (например, на Next.js) и вынести
+  маршруты в серверную среду.
+
+### Оптимизация производительности
+- Страницы загружаются лениво (`React.lazy` + `Suspense`).
+- Компоненты списка мемоизированы (`React.memo`).
+- Поиск по библиотеке использует `useDeferredValue`.
+
+## Запуск
+
+```
+npm install
+npm run dev
+```

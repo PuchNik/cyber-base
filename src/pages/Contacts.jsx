@@ -1,10 +1,12 @@
+import SectionHeader from "../components/ui/SectionHeader.jsx";
+
 function Contacts() {
     return (
         <section className="section section--compact">
-            <div className="section__head">
-                <h2>Контакты</h2>
-                <p>Связаться с командой и предложить тему.</p>
-            </div>
+            <SectionHeader
+                title="Контакты"
+                description="Связаться с командой и предложить тему."
+            />
             <div className="contact-card">
                 <div>
                     <strong>Email</strong>

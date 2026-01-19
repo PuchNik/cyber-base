@@ -1,36 +1,23 @@
+import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
-
-const books = [
-    {
-        slug: "zashita-dannyh-ot-avtorizacii-do-audita",
-        title: "Защита данных. От авторизации до аудита",
-        author: "Джейсон Андресс",
-        description:
-            "Практическое руководство по защите данных: контроль доступа, аудит и устойчивость ключевых систем.",
-        downloadUrl: "library/(2) ИБ (USA).pdf",
-        coverUrl: "library/covers/ИБ.png",
-    },
-    { slug: "book-2", title: "Название книги", author: "Имя автора" },
-    { slug: "book-3", title: "Название книги", author: "Имя автора" },
-    { slug: "book-4", title: "Название книги", author: "Имя автора" },
-    { slug: "book-5", title: "Название книги", author: "Имя автора" },
-    { slug: "book-6", title: "Название книги", author: "Имя автора" },
-];
-
-const resolveAsset = (path) =>
-    `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+import SectionHeader from "../components/ui/SectionHeader.jsx";
+import { books } from "../features/library/data/books.js";
+import { resolveAsset } from "../shared/lib/resolveAsset.js";
 
 function BookDetails() {
     const { slug } = useParams();
-    const book = books.find((item) => item.slug === slug);
+    const book = useMemo(
+        () => books.find((item) => item.slug === slug),
+        [slug]
+    );
 
     if (!book) {
         return (
             <section className="section">
-                <div className="section__head">
-                    <h2>Книга не найдена</h2>
-                    <p>Проверьте ссылку или вернитесь в библиотеку.</p>
-                </div>
+                <SectionHeader
+                    title="Книга не найдена"
+                    description="Проверьте ссылку или вернитесь в библиотеку."
+                />
                 <Link className="btn btn--ghost" to="/library">
                     Вернуться к библиотеке
                 </Link>
@@ -40,10 +27,7 @@ function BookDetails() {
 
     return (
         <section className="section">
-            <div className="section__head">
-                <h2>{book.title}</h2>
-                <p>{book.author}</p>
-            </div>
+            <SectionHeader title={book.title} description={book.author} />
             <div className="book-details">
                 <div className="book-details__cover" aria-hidden="true">
                     {book.coverUrl ? (
@@ -54,6 +38,7 @@ function BookDetails() {
                     ) : null}
                 </div>
                 <div className="book-details__content">
+                    {book.tag ? <span className="tag">{book.tag}</span> : null}
                     <p>
                         {book.description ?? "Описание будет добавлено позже."}
                     </p>
