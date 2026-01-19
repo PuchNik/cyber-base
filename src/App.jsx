@@ -1,4 +1,5 @@
 import { NavLink, Route, Routes } from "react-router-dom";
+import { useEffect, useState } from "react";
 import "./App.css";
 import PixelExplosion from "./components/PixelExplosion.jsx";
 import BookDetails from "./pages/BookDetails.jsx";
@@ -11,6 +12,20 @@ const getNavLinkClass = ({ isActive }) =>
     isActive ? "nav__link nav__link--active" : "nav__link";
 
 function App() {
+    const [theme, setTheme] = useState(() => {
+        const saved = window.localStorage.getItem("theme");
+        return saved === "dark" ? "dark" : "light";
+    });
+
+    useEffect(() => {
+        document.body.dataset.theme = theme;
+        window.localStorage.setItem("theme", theme);
+    }, [theme]);
+
+    const handleToggleTheme = () => {
+        setTheme((prev) => (prev === "dark" ? "light" : "dark"));
+    };
+
     return (
         <div className="page">
             <PixelExplosion />
@@ -33,6 +48,14 @@ function App() {
                         Контакты
                     </NavLink>
                 </nav>
+                <button
+                    className="theme-toggle"
+                    type="button"
+                    onClick={handleToggleTheme}
+                    aria-pressed={theme === "dark"}
+                >
+                    {theme === "dark" ? "Светлая тема" : "Темная тема"}
+                </button>
             </header>
 
             <main className="content">

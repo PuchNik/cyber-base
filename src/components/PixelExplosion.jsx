@@ -1,31 +1,27 @@
 import { useEffect, useMemo, useState } from "react";
 
-const colors = [
-    "#ff3ea5",
-    "#ffd447",
-    "#3ad5ff",
-    "#7a5cff",
-    "#2a9d6f",
-    "#ffffff",
+const slashColors = [
+    "rgba(255, 255, 255, 0.85)",
+    "rgba(244, 178, 77, 0.7)",
+    "rgba(123, 183, 176, 0.75)",
+    "rgba(94, 165, 255, 0.65)",
 ];
 
-const createParticles = () => {
-    const count = 12 + Math.floor(Math.random() * 6);
-    return Array.from({ length: count }, () => {
-        const angle = Math.random() * Math.PI * 2;
-        const distance = 24 + Math.random() * 36;
-        const size = 4 + Math.floor(Math.random() * 4);
-        return {
-            dx: Math.cos(angle) * distance,
-            dy: Math.sin(angle) * distance,
-            size,
-            color: colors[Math.floor(Math.random() * colors.length)],
-        };
-    });
+const createSlash = () => {
+    const length = 160 + Math.floor(Math.random() * 160);
+    const width = 2 + Math.floor(Math.random() * 2);
+    const angle = -35 + Math.random() * 70;
+    return {
+        length,
+        width,
+        angle,
+        color: slashColors[Math.floor(Math.random() * slashColors.length)],
+        glow: slashColors[Math.floor(Math.random() * slashColors.length)],
+    };
 };
 
 function PixelExplosion() {
-    const [explosions, setExplosions] = useState([]);
+    const [slashes, setSlashes] = useState([]);
 
     useEffect(() => {
         const handleClick = (event) => {
@@ -34,13 +30,13 @@ function PixelExplosion() {
                 id,
                 x: event.clientX,
                 y: event.clientY,
-                particles: createParticles(),
+                slash: createSlash(),
             };
-            setExplosions((prev) => [...prev, payload]);
+            setSlashes((prev) => [...prev, payload]);
 
             window.setTimeout(() => {
-                setExplosions((prev) => prev.filter((item) => item.id !== id));
-            }, 650);
+                setSlashes((prev) => prev.filter((item) => item.id !== id));
+            }, 700);
         };
 
         window.addEventListener("click", handleClick);
@@ -49,33 +45,25 @@ function PixelExplosion() {
 
     const rendered = useMemo(
         () =>
-            explosions.map((explosion) => (
+            slashes.map((slash) => (
                 <div
-                    key={explosion.id}
-                    className="pixel-explosion"
+                    key={slash.id}
+                    className="katana-slash"
                     style={{
-                        left: `${explosion.x}px`,
-                        top: `${explosion.y}px`,
+                        left: `${slash.x}px`,
+                        top: `${slash.y}px`,
+                        "--length": `${slash.slash.length}px`,
+                        "--width": `${slash.slash.width}px`,
+                        "--angle": `${slash.slash.angle}deg`,
+                        "--color": slash.slash.color,
+                        "--glow": slash.slash.glow,
                     }}
-                >
-                    {explosion.particles.map((particle, index) => (
-                        <span
-                            key={`${explosion.id}-${index}`}
-                            className="pixel"
-                            style={{
-                                "--dx": `${particle.dx}px`,
-                                "--dy": `${particle.dy}px`,
-                                "--size": `${particle.size}px`,
-                                "--color": particle.color,
-                            }}
-                        />
-                    ))}
-                </div>
+                />
             )),
-        [explosions]
+        [slashes]
     );
 
-    return <div className="pixel-explosion-layer">{rendered}</div>;
+    return <div className="katana-slash-layer">{rendered}</div>;
 }
 
 export default PixelExplosion;
