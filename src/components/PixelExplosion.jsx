@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 
 const colors = [
-    "#ff3ea5",
-    "#ffd447",
-    "#3ad5ff",
-    "#7a5cff",
-    "#2a9d6f",
-    "#ffffff",
+    "#7bb7b0",
+    "#f4b24d",
+    "#8fb9ff",
+    "#caa8ff",
+    "#7fc8b3",
+    "#fff3e6",
 ];
 
 const createParticles = () => {
